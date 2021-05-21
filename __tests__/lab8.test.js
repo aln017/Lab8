@@ -38,7 +38,7 @@ describe('Basic user flow for SPA ', () => {
   it('Test4: On first Entry page - checking page header title', async () => {
     // implement test4: Clicking on the first journal entry should update the header text to “Entry 1” 
     const header = await page.$('h1');
-    let headText = await page.evaluate(value => value.textContent, header)
+    const headText = await page.evaluate(value => value.textContent, header)
     expect(headText).toBe('Entry 1');
 
   });
@@ -76,7 +76,9 @@ describe('Basic user flow for SPA ', () => {
   it('Test6: On first Entry page - checking <body> element classes', async () => {
     // implement test6: Clicking on the first journal entry should update the class attribute of <body> to ‘single-entry’
     const body = await page.$('body');
-    
+    const attr = await body.getProperty('className');
+    const attrName = await attr.jsonValue();
+    expect(attrName).toBe('single-entry');
   });
 
   it('Test7: Clicking the settings icon, new URL should contain #settings', async () => {
@@ -89,29 +91,55 @@ describe('Basic user flow for SPA ', () => {
 
   it('Test8: On Settings page - checking page header title', async () => {
     // implement test8: Clicking on the settings icon should update the header to be “Settings”
-
+    const header = await page.$('h1');
+    let headText = await page.evaluate(value => value.textContent, header)
+    expect(headText).toBe('Settings');
   });
 
   it('Test9: On Settings page - checking <body> element classes', async () => {
     // implement test9: Clicking on the settings icon should update the class attribute of <body> to ‘settings’
-
+    const body = await page.$('body');
+    const attr = await body.getProperty('className');
+    const attrName = await attr.jsonValue();
+    expect(attrName).toBe('settings');
   });
 
   it('Test10: Clicking the back button, new URL should be /#entry1', async() => {
     // implement test10: Clicking on the back button should update the URL to contain ‘/#entry1’
-
+    await page.goBack();
+    const url = page.url();
+    expect(url).toBe('http://127.0.0.1:5500/#entry1');
   });
 
-  // define and implement test11: Clicking the back button once should bring the user back to the home page
+  it('Test11: Clicking the back button, new url should be home page', async() => {
+    // define and implement test11: Clicking the back button once should bring the user back to the home page
+    await page.goBack();
+    const url = page.url();
+    expect(url).toBe('http://127.0.0.1:5500/');
+  });
 
+  it('Test12: On home page, check header title', async() => {
+    // define and implement test12: When the user if on the homepage, the header title should be “Journal Entries”
+    const header = await page.$('h1');
+    let headText = await page.evaluate(value => value.textContent, header)
+    expect(headText).toBe('Journal Entries');
+  });
 
-  // define and implement test12: When the user if on the homepage, the header title should be “Journal Entries”
+  it('Test13: On home page, the body element class attribute', async() => {
+    // define and implement test13: On the home page the <body> element should not have any class attribute 
+    const body = await page.$('body');
+    const attr = await body.getProperty('className');
+    const attrName = await attr.jsonValue();
+    expect(attrName).toBe('');
+  });
 
-
-  // define and implement test13: On the home page the <body> element should not have any class attribute 
-
-
-  // define and implement test14: Verify the url is correct when clicking on the second entry
+  it('Test14: On clicking second entry, url should have /#entry2', async() => {
+  // define and implement test14: Verify the url is correct when clicking on the second entry(
+    const entries = await page.$$('journal-entry');
+    await entries[1].click();
+    const url = await entries[1].url();
+    expect(url).toBe('http://127.0.0.1:5500/#entry2');
+  });
 
 
   // define and implement test15: Verify the title is current when clicking on the second entry
