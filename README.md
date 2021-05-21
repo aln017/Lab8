@@ -1,9 +1,10 @@
 # Lab8_Starter
+Allison Ngo
 
 ## Check your understanding q's (FILL OUT)
 1. In your own words: Where would you fit your automated tests in your Bujo project development pipeline? (just write the letter)
 
-1
+1) Within a Github action that runs whenever code is pushed 
 
 2. Would you use a unit test to test the “message” feature of a messaging application? Why or why not? For this question, assume the “message” feature allows a user to write and send a message to another user.
 
