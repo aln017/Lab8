@@ -13,7 +13,7 @@ describe('Basic user flow for SPA ', () => {
   });
 
   // test 2 is given
-  it('Test2: Make sure <journal-entry> elements are populated', async () => {
+  /*it('Test2: Make sure <journal-entry> elements are populated', async () => {
     let allArePopulated = true;
     let data, plainValue;
     const entries = await page.$$('journal-entry');
@@ -25,15 +25,21 @@ describe('Basic user flow for SPA ', () => {
       if (plainValue.content.length == 0) { allArePopulated = false; }
     }
     expect(allArePopulated).toBe(true);
-  }, 30000);
+  }, 30000);*/
 
   it('Test3: Clicking first <journal-entry>, new URL should contain /#entry1', async () => {
-    // implement test3: Clicking on the first journal entry should update the URL to contain “/#entry1”
+    // implement test3: Clicking on the first journal entry should update the URL to contain “/#entry1”'
+    await page.click('journal-entry');
+    const url = await page.url();
+    expect(url).toBe('http://127.0.0.1:5500/#entry1');
 
   });
 
   it('Test4: On first Entry page - checking page header title', async () => {
     // implement test4: Clicking on the first journal entry should update the header text to “Entry 1” 
+    const header = await page.$('h1');
+    let headText = await page.evaluate(value => value.textContent, header)
+    expect(headText).toBe('Entry 1');
 
   });
 
@@ -50,16 +56,34 @@ describe('Basic user flow for SPA ', () => {
           }
         }
       */
+     const entry = await page.$('journal-entry');
+     const data = await entry.getProperty('entry');
+     const value = await data.jsonValue();
+
+    const entryobj = { 
+      title: 'You like jazz?',
+      date: '4/25/2021',
+      content: "According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible.",
+      image: {
+        src: 'https://i1.wp.com/www.thepopcornmuncher.com/wp-content/uploads/2016/11/bee-movie.jpg?resize=800%2C455',
+        alt: 'bee with sunglasses'
+      }
+    }
+     expect(value).toEqual(entryobj);
 
   }, 10000);
 
   it('Test6: On first Entry page - checking <body> element classes', async () => {
     // implement test6: Clicking on the first journal entry should update the class attribute of <body> to ‘single-entry’
-
+    const body = await page.$('body');
+    
   });
 
   it('Test7: Clicking the settings icon, new URL should contain #settings', async () => {
     // implement test7: Clicking on the settings icon should update the URL to contain “/#settings”
+    await page.click('img');
+    const url = page.url();
+    expect(url).toBe('http://127.0.0.1:5500/#settings');
 
   });
 
