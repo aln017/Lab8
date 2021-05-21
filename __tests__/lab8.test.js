@@ -13,7 +13,7 @@ describe('Basic user flow for SPA ', () => {
   });
 
   // test 2 is given
-  /*it('Test2: Make sure <journal-entry> elements are populated', async () => {
+  it('Test2: Make sure <journal-entry> elements are populated', async () => {
     let allArePopulated = true;
     let data, plainValue;
     const entries = await page.$$('journal-entry');
@@ -25,7 +25,7 @@ describe('Basic user flow for SPA ', () => {
       if (plainValue.content.length == 0) { allArePopulated = false; }
     }
     expect(allArePopulated).toBe(true);
-  }, 30000);*/
+  }, 30000);
 
   it('Test3: Clicking first <journal-entry>, new URL should contain /#entry1', async () => {
     // implement test3: Clicking on the first journal entry should update the URL to contain “/#entry1”'
@@ -135,25 +135,78 @@ describe('Basic user flow for SPA ', () => {
 
   it('Test14: On clicking second entry, url should have /#entry2', async() => {
   // define and implement test14: Verify the url is correct when clicking on the second entry(
-    const entries = await page.$$('journal-entry');
-    await entries[1].click();
-    const url = await entries[1].url();
+    await page.evaluate(() => {
+      const entries = document.querySelectorAll('journal-entry');
+      entries[1].click();
+    });
+    const url = await page.url();
     expect(url).toBe('http://127.0.0.1:5500/#entry2');
   });
 
 
+  it('Test15: On second entry page, check header title', async() => {
   // define and implement test15: Verify the title is current when clicking on the second entry
+    const header = await page.$('h1');
+    let headText = await page.evaluate(value => value.textContent, header)
+    expect(headText).toBe('Entry 2');
+  });
+
+  it('Test16: On second entry page, check page contents are correct', async() => {
+    // define and implement test16: Verify the entry page contents is correct when clicking on the second entry
+    const entry = await page.$$('journal-entry');
+    const data = await entry[1].getProperty('entry');
+    const value = await data.jsonValue();
+    
+    const entryobj = { 
+      title: 'Run, Forrest! Run!',
+      date: '4/26/2021',
+      content: "Mama always said life was like a box of chocolates. You never know what you're gonna get.",
+      image: {
+        src: 'https://s.abcnews.com/images/Entertainment/HT_forrest_gump_ml_140219_4x3_992.jpg',
+        alt: 'forrest running'
+      }
+    }
+
+    expect(value).toEqual(entryobj);
+  });
+
+  it('Test17: Clicking home, then clicking 5th entry, url should have /#entry5', async() => {
+    // define and implement test17: Verify url is correct after clicking home page and then 5th entry
+    await page.goBack();
+
+    await page.evaluate(() => {
+      const entries = document.querySelectorAll('journal-entry');
+      entries[4].click();
+    });
+    const url = await page.url();
+    expect(url).toBe('http://127.0.0.1:5500/#entry5');
+  });
 
 
-  // define and implement test16: Verify the entry page contents is correct when clicking on the second entry
+  it('Test18: On second entry page, check page contents are correct', async() => {
+  // define and implement test18: Verify URL is correct going to settings
+    await page.click('img');
+    const url = page.url();
+    expect(url).toBe('http://127.0.0.1:5500/#settings');
+  });
 
 
-  // create your own test 17
+  it('Test19: Go back to previous page twice and check that title is correct', async() => {
+  // define and implement test19: Verify that title is journal entries after going backwards twice
+    await page.goBack();
+    await page.goBack();
+    const header = await page.$('h1');
+    let headText = await page.evaluate(value => value.textContent, header)
+    expect(headText).toBe('Journal Entries');
+  });
 
-  // create your own test 18
-
-  // create your own test 19
-
-  // create your own test 20
-  
+  it('Test20: Go forward to future pages twice and check that body class is correct', async() => {
+  // define and implement test19: Verify that body has the attribute 'settings' after going forward twice
+    await page.goForward();
+    await page.goForward();
+    const body = await page.$('body');
+    const attr = await body.getProperty('className');
+    const attrName = await attr.jsonValue();
+    expect(attrName).toBe('settings');
+  });
 });
